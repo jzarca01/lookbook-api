@@ -5,7 +5,7 @@ An API for Lookbook.nu
 ## Usage
 
 ```javascript
-const LookbookApi = require('./index');
+const LookbookApi = require('lookbook-api');
 const lookbook = new LookbookApi();
 ```
 

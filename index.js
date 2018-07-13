@@ -1,5 +1,7 @@
 const axios = require('axios');
-const querystring = require('querystring');
+const qs = require('qs');
+const FormData = require('form-data');
+const fs = require('fs');
 
 class lookbookApi {
   constructor() {
@@ -49,6 +51,17 @@ class lookbookApi {
       let response = await this.request({
         method: 'POST',
         url: `/login.json?user[email]=${email}&user[password]=${password}`,
+        params: {
+          user: {
+            email: email,
+            password: password
+          }
+        },
+        paramsSerializer: function (params) {
+          return qs.stringify(params, {
+            arrayFormat: 'brackets'
+          })
+        },
         responseType: 'json'
       });
       this.setAccessToken(response.data.access_token);
@@ -80,8 +93,10 @@ class lookbookApi {
           view: 'full',
           gender: gender
         },
-        paramsSerializer: function(params) {
-          return querystring.stringify(params);
+        paramsSerializer: function (params) {
+          return qs.stringify(params, {
+            arrayFormat: 'brackets'
+          })
         },
         responseType: 'json'
       });
@@ -149,8 +164,10 @@ class lookbookApi {
           time: time,
           gender: gender
         },
-        paramsSerializer: function(params) {
-          return querystring.stringify(params);
+        paramsSerializer: function (params) {
+          return qs.stringify(params, {
+            arrayFormat: 'brackets'
+          })
         },
         responseType: 'json'
       });
@@ -171,14 +188,113 @@ class lookbookApi {
           time: time,
           gender: gender
         },
-        paramsSerializer: function(params) {
-          return querystring.stringify(params);
+        paramsSerializer: function (params) {
+          return qs.stringify(params, {
+            arrayFormat: 'brackets'
+          })
         },
         responseType: 'json'
       });
       return response;
     } catch (error) {
       console.log('error');
+    }
+  }
+
+  async hypeLook(lookId) {
+    try {
+      let response = await this.request({
+        method: 'POST',
+        url: `/look/${lookId}/hype`
+      });
+      return response;
+    } catch (error) {
+      console.log('error');
+    }
+  }
+
+  async fanUser(userId) {
+    try {
+      let response = await this.request({
+        method: 'POST',
+        url: `/user/${userId}/fan`
+      });
+      return response;
+    } catch (error) {
+      console.log('error');
+    }
+  }
+
+  async unfanUser(userId) {
+    try {
+      let response = await this.request({
+        method: 'DELETE',
+        url: `/user/${userId}/fan`
+      });
+      return response;
+    } catch (error) {
+      console.log('error');
+    }
+  }
+
+  async addComment(modelId, comment) {
+    try {
+      let response = await this.request({
+        method: 'POST',
+        url: '/comment/create',
+        params: {
+          comment: {
+            type: 'LookComment',
+            model_id: modelId,
+            body: comment
+          }
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        paramsSerializer: function (params) {
+          return qs.stringify(params, {
+            arrayFormat: 'brackets'
+          })
+        },
+        responseType: 'json'
+      });
+      return response.data;
+    } catch (error) {
+      console.log('error');
+    }
+  }
+
+  async postLook(userId, {
+    title,
+    description,
+    photo,
+    tumblr = 'NO',
+    facebook = 'NO',
+    twitter = 'NO'
+  }) {
+    try {
+      let formData = new FormData()
+      formData.append('photo', fs.createReadStream(__dirname + `/uploads/${photo}`))
+      formData.append('title', title)
+      formData.append('user_id', userId)
+      //formData.append('colors', [])
+      //formData.append('items_tags', [])
+      formData.append('description', description)
+      formData.append('post_to_tumblr', tumblr)
+      formData.append('post_to_facebook', facebook)
+      formData.append('post_to_twitter', twitter)
+
+      let response = await this.request({
+        method: 'POST',
+        url: '/look/create',
+        data: formData,
+        headers: formData.getHeaders(),
+        responseType: 'json'
+      });
+      return response.data;
+    } catch (error) {
+      console.log('error', error);
     }
   }
 }

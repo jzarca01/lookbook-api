@@ -56,11 +56,42 @@ lookbook.getItemsByLook(lookId);
 ### Search Looks
 
 ```javascript
-lookbook.sarchLooks(searchTerm, sort ?= 'top'|'new', time ?='year'|'month'|'day', gender ?= 'girls'|'guys')
+lookbook.searchLooks(searchTerm, sort ?= 'top'|'new', time ?='year'|'month'|'day', gender ?= 'girls'|'guys')
 ```
 
 ### Search People
 
 ```javascript
-lookbook.sarchPeople(searchTerm, sort ?= 'top'|'new', time ?= 'year'|'month'|'day', gender ?= 'girls'|'guys')
+lookbook.searchPeople(searchTerm, sort ?= 'top'|'new', time ?= 'year'|'month'|'day', gender ?= 'girls'|'guys')
 ```
+
+### Hype a look 
+
+```javascript
+lookbook.hypeLook(lookId)
+```
+
+### Fan a user 
+
+```javascript
+lookbook.fanUser(userId)
+```
+
+### Unfan a user 
+
+```javascript
+lookbook.unfanUser(userId)
+```
+
+### Add a comment 
+
+```javascript
+lookbook.addComment(modelId, comment)
+```
+
+### Post a look
+
+```javascript
+lookbook.postLook(userId, { title, description, photo, tumblr = 'NO', facebook = 'NO', twitter = 'NO' })
+```
+

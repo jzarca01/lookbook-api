@@ -92,6 +92,6 @@ lookbook.addComment(modelId, comment)
 ### Post a look
 
 ```javascript
-lookbook.postLook(userId, { title, description, photo, tumblr = 'NO', facebook = 'NO', twitter = 'NO' })
+lookbook.postLook(userId, { title, description, photo = 'test.jpeg', tumblr = 'NO', facebook = 'NO', twitter = 'NO' })
 ```
-
+test.jpeg can be found in the folder 'Uploads'

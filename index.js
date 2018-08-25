@@ -153,7 +153,7 @@ class lookbookApi {
     }
   }
 
-  async searchLooks(searchTerm, sort = 'top', time = null, gender = null) {
+  async searchLooks(searchTerm, sort = 'top', time = null, gender = null, page = 1) {
     try {
       let response = await this.request({
         method: 'GET',
@@ -162,7 +162,8 @@ class lookbookApi {
           q: searchTerm,
           sort: sort,
           time: time,
-          gender: gender
+          gender: gender,
+          page: page
         },
         paramsSerializer: function (params) {
           return qs.stringify(params, {

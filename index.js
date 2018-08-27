@@ -3,6 +3,8 @@ const qs = require('qs');
 const FormData = require('form-data');
 const fs = require('fs');
 
+const MAX_RESULTS_PER_PAGE = 10
+
 class lookbookApi {
   constructor() {
     this.request = axios.create({
@@ -42,7 +44,7 @@ class lookbookApi {
       this.setAccessToken(response.data.access_token);
       return response.data;
     } catch (error) {
-      console.log('error', error);
+      console.log('error with signUp', error);
     }
   }
 
@@ -67,7 +69,7 @@ class lookbookApi {
       this.setAccessToken(response.data.access_token);
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('error with login', error);
     }
   }
 
@@ -80,7 +82,7 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('error with getUser'), error;
     }
   }
 
@@ -102,7 +104,7 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('error with getLooks', error);
     }
   }
 
@@ -127,7 +129,7 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('error with getLook', error);
     }
   }
 
@@ -136,7 +138,7 @@ class lookbookApi {
       const result = await this.getLook(lookId);
       return result.look.items;
     } catch (error) {
-      console.log('error');
+      console.log('error with getItemsByLook', error);
     }
   }
 
@@ -149,20 +151,30 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('error with getLooksByCategory', error);
     }
   }
 
-  async searchLooks(searchTerm, sort = 'top', time = null, gender = null) {
+  async getResultsNumber(search = "looks", searchTerm, sort = 'top', time = null, gender = null) {
+    try {
+      const results = await this.getResults(search, searchTerm, sort, time, gender)
+      return results.total
+    } catch (error) {
+      console.log('error with getResultsNumber', error);
+    }
+  }
+
+  async getResults(search = "looks", searchTerm, sort = 'top', time = null, gender = null, page = "1") {
     try {
       let response = await this.request({
         method: 'GET',
-        url: '/search/looks',
+        url: `/search/${search}`,
         params: {
           q: searchTerm,
           sort: sort,
           time: time,
-          gender: gender
+          gender: gender,
+          page: page
         },
         paramsSerializer: function (params) {
           return qs.stringify(params, {
@@ -173,31 +185,61 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error', error);
+      console.log('error with getResults', error);
     }
   }
 
-  async searchPeople(searchTerm, sort = 'top', time = null, gender = null) {
+  async searchLooks(searchTerm, sort = 'top', time = null, gender = null, maxResults = "50") {
     try {
-      let response = await this.request({
-        method: 'GET',
-        url: '/search/people',
-        params: {
-          q: searchTerm,
-          sort: sort,
-          time: time,
-          gender: gender
-        },
-        paramsSerializer: function (params) {
-          return qs.stringify(params, {
-            arrayFormat: 'brackets'
-          })
-        },
-        responseType: 'json'
-      });
-      return response;
+      const resultsNumber = await this.getResultsNumber('looks', searchTerm, sort, time, gender)
+      let totalFetchedResults = 0
+      const numberOfPages = (resultsNumber % 10) + 1
+      if(resultsNumber <= MAX_RESULTS_PER_PAGE) {
+        return {term: searchTerm, ...await this.getResults("looks", searchTerm, sort, time, gender)}
+      }
+      else {
+        let looks = []
+
+        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < maxResults); currentPage++) {
+          let moreLooks = await this.getResults("looks", searchTerm, sort, time, gender, currentPage)
+          totalFetchedResults += MAX_RESULTS_PER_PAGE
+          looks.push(moreLooks.looks)
+        }
+        return {
+          term: searchTerm,
+          total: resultsNumber,
+          looks: looks.reduce((acc, el) => [...acc, ...el] , [])
+        }
+      }
     } catch (error) {
-      console.log('error');
+      console.log('error with searchLooks', error);
+    }
+  }
+
+  async searchPeople(searchTerm, sort = 'top', time = null, gender = null, maxResults = "50") {
+    try {
+      const resultsNumber = await this.getResultsNumber('users', searchTerm, sort, time, gender)
+      let totalFetchedResults = 0
+      const numberOfPages = (resultsNumber % 10) + 1
+      if(resultsNumber <= MAX_RESULTS_PER_PAGE) {
+        return {term: searchTerm, ...await this.getResults("users", searchTerm, sort, time, gender)}
+      }
+      else {
+        let users = []
+
+        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < maxResults); currentPage++) {
+          let morePeople = await this.getResults("users", searchTerm, sort, time, gender, currentPage)
+          totalFetchedResults += MAX_RESULTS_PER_PAGE
+          users.push(morePeople.users)
+        }
+        return {
+          term: searchTerm,
+          total: resultsNumber,
+          users: users.reduce((acc, el) => [...acc, ...el] , [])
+        }
+      }
+    } catch (error) {
+      console.log('error with searchPeople', error);
     }
   }
 
@@ -209,7 +251,7 @@ class lookbookApi {
       });
       return response;
     } catch (error) {
-      console.log('error');
+      console.log('error with hypeLook', error);
     }
   }
 
@@ -221,7 +263,7 @@ class lookbookApi {
       });
       return response;
     } catch (error) {
-      console.log('error');
+      console.log('error with fanUser', error);
     }
   }
 
@@ -233,7 +275,7 @@ class lookbookApi {
       });
       return response;
     } catch (error) {
-      console.log('error');
+      console.log('error with unfanUser', error);
     }
   }
 
@@ -261,7 +303,7 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error');
+      console.log('error with addComment', error);
     }
   }
 
@@ -294,7 +336,7 @@ class lookbookApi {
       });
       return response.data;
     } catch (error) {
-      console.log('error', error);
+      console.log('error with postLook', error);
     }
   }
 }

@@ -56,13 +56,13 @@ lookbook.getItemsByLook(lookId);
 ### Search Looks
 
 ```javascript
-lookbook.searchLooks(searchTerm, sort ?= 'top'|'new', time ?='year'|'month'|'day', gender ?= 'girls'|'guys')
+lookbook.searchLooks(searchTerm, sort ?= 'top'|'new', time ?='year'|'month'|'day', gender ?= 'girls'|'guys', maxResults = "50")
 ```
 
 ### Search People
 
 ```javascript
-lookbook.searchPeople(searchTerm, sort ?= 'top'|'new', time ?= 'year'|'month'|'day', gender ?= 'girls'|'guys')
+lookbook.searchPeople(searchTerm, sort ?= 'top'|'new', time ?= 'year'|'month'|'day', gender ?= 'girls'|'guys', maxResults = "50")
 ```
 
 ### Hype a look 

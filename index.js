@@ -192,7 +192,7 @@ class lookbookApi {
   async searchLooks(searchTerm, sort = 'top', time = null, gender = null, maxResults = "50") {
     try {
       const resultsNumber = await this.getResultsNumber('looks', searchTerm, sort, time, gender)
-      const numberOfPages = (resultsNumber % 10) + 1
+      const numberOfPages = Math.floor(resultsNumber / 10) + 1
 
       if(maxResults === "ALL") {
         maxResults = resultsNumber
@@ -203,9 +203,8 @@ class lookbookApi {
       }
       else {
         let looks = []
-        let totalFetchedResults = 0
 
-        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < parseInt(maxResults)); currentPage++) {
+        for(let currentPage = 1, totalFetchedResults = 0; (currentPage < numberOfPages) && (totalFetchedResults < parseInt(maxResults)); currentPage++) {
           let moreLooks = await this.getResults("looks", searchTerm, sort, time, gender, currentPage)
           totalFetchedResults += MAX_RESULTS_PER_PAGE
           looks.push(moreLooks.looks)
@@ -224,7 +223,7 @@ class lookbookApi {
   async searchPeople(searchTerm, sort = 'top', time = null, gender = null, maxResults = "50") {
     try {
       const resultsNumber = await this.getResultsNumber('users', searchTerm, sort, time, gender)
-      const numberOfPages = (resultsNumber % 10) + 1
+      const numberOfPages = Math.floor(resultsNumber / 10) + 1
 
       if(maxResults === "ALL"){
         maxResults = resultsNumber
@@ -235,9 +234,8 @@ class lookbookApi {
       }
       else {
         let users = []
-        let totalFetchedResults = 0
 
-        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < parseInt(maxResults)); currentPage++) {
+        for(let currentPage = 1, totalFetchedResults = 0; (currentPage < numberOfPages) && (totalFetchedResults < parseInt(maxResults)); currentPage++) {
           let morePeople = await this.getResults("users", searchTerm, sort, time, gender, currentPage)
           totalFetchedResults += MAX_RESULTS_PER_PAGE
           users.push(morePeople.users)

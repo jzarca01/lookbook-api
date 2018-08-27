@@ -194,6 +194,10 @@ class lookbookApi {
       const resultsNumber = await this.getResultsNumber('looks', searchTerm, sort, time, gender)
       const numberOfPages = (resultsNumber % 10) + 1
 
+      if(maxResults === "ALL") {
+        maxResults = resultsNumber
+      }
+
       if(resultsNumber <= MAX_RESULTS_PER_PAGE) {
         return {term: searchTerm, ...await this.getResults("looks", searchTerm, sort, time, gender)}
       }
@@ -201,7 +205,7 @@ class lookbookApi {
         let looks = []
         let totalFetchedResults = 0
 
-        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < maxResults); currentPage++) {
+        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < parseInt(maxResults)); currentPage++) {
           let moreLooks = await this.getResults("looks", searchTerm, sort, time, gender, currentPage)
           totalFetchedResults += MAX_RESULTS_PER_PAGE
           looks.push(moreLooks.looks)
@@ -222,6 +226,10 @@ class lookbookApi {
       const resultsNumber = await this.getResultsNumber('users', searchTerm, sort, time, gender)
       const numberOfPages = (resultsNumber % 10) + 1
 
+      if(maxResults === "ALL"){
+        maxResults = resultsNumber
+      }
+
       if(resultsNumber <= MAX_RESULTS_PER_PAGE) {
         return {term: searchTerm, ...await this.getResults("users", searchTerm, sort, time, gender)}
       }
@@ -229,7 +237,7 @@ class lookbookApi {
         let users = []
         let totalFetchedResults = 0
 
-        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < maxResults); currentPage++) {
+        for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < parseInt(maxResults)); currentPage++) {
           let morePeople = await this.getResults("users", searchTerm, sort, time, gender, currentPage)
           totalFetchedResults += MAX_RESULTS_PER_PAGE
           users.push(morePeople.users)

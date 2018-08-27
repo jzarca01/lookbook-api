@@ -57,12 +57,14 @@ lookbook.getItemsByLook(lookId);
 
 ```javascript
 lookbook.searchLooks(searchTerm, sort ?= 'top'|'new', time ?='year'|'month'|'day', gender ?= 'girls'|'guys', maxResults = "50")
+maxResults can be "ALL"
 ```
 
 ### Search People
 
 ```javascript
 lookbook.searchPeople(searchTerm, sort ?= 'top'|'new', time ?= 'year'|'month'|'day', gender ?= 'girls'|'guys', maxResults = "50")
+maxResults can be "ALL"
 ```
 
 ### Hype a look 

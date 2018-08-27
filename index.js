@@ -192,13 +192,14 @@ class lookbookApi {
   async searchLooks(searchTerm, sort = 'top', time = null, gender = null, maxResults = "50") {
     try {
       const resultsNumber = await this.getResultsNumber('looks', searchTerm, sort, time, gender)
-      let totalFetchedResults = 0
       const numberOfPages = (resultsNumber % 10) + 1
+
       if(resultsNumber <= MAX_RESULTS_PER_PAGE) {
         return {term: searchTerm, ...await this.getResults("looks", searchTerm, sort, time, gender)}
       }
       else {
         let looks = []
+        let totalFetchedResults = 0
 
         for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < maxResults); currentPage++) {
           let moreLooks = await this.getResults("looks", searchTerm, sort, time, gender, currentPage)
@@ -219,13 +220,14 @@ class lookbookApi {
   async searchPeople(searchTerm, sort = 'top', time = null, gender = null, maxResults = "50") {
     try {
       const resultsNumber = await this.getResultsNumber('users', searchTerm, sort, time, gender)
-      let totalFetchedResults = 0
       const numberOfPages = (resultsNumber % 10) + 1
+
       if(resultsNumber <= MAX_RESULTS_PER_PAGE) {
         return {term: searchTerm, ...await this.getResults("users", searchTerm, sort, time, gender)}
       }
       else {
         let users = []
+        let totalFetchedResults = 0
 
         for(let currentPage = 1; (currentPage < numberOfPages) || (totalFetchedResults < maxResults); currentPage++) {
           let morePeople = await this.getResults("users", searchTerm, sort, time, gender, currentPage)

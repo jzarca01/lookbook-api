@@ -1,6 +1,6 @@
 {
   "name": "lookbook-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An API for Lookbook.nu",
   "main": "index.js",
   "scripts": {
